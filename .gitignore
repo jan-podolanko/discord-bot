@@ -1,3 +1,6 @@
+__pycache__/
+*.pyc
+
 token.json
 discord.log
 test1.py
