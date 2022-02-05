@@ -17,3 +17,4 @@
 5. general reminder
 6. perhaps show all quotes by certain author? also change the downloaded file to something else, more easily readable?
 7. adding to chats
+8. fix jan listener
