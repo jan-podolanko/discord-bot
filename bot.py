@@ -1,11 +1,9 @@
-import discord
+import discord, logging, json
 from discord.ext import commands
-import logging
-import json
-from misc import Miscellaneous
-from quotes import Quotes
-from reminders import Reminders
-from events import Events
+from cogs.misc import Miscellaneous
+from cogs.quotes import Quotes
+from cogs.reminders import Reminders
+from cogs.events import Events
 
 #logging
 logger = logging.getLogger('discord')
@@ -19,35 +17,13 @@ activity = discord.Activity(type=discord.ActivityType.listening, name="just vibi
 desc = "Yello! WeebReminder is a bot of many miscellaneous uses."
 bot = commands.Bot(command_prefix='!', description=desc, activity=activity, status=discord.Status.idle)
 
-
-#message on logging on
-@bot.event
-async def on_ready():
-    channel = bot.get_channel(815254981736529941)
-    await channel.send('I have been awakened!')
-
-#error handling (found on tutorial)
-@bot.event
-async def on_command_error(ctx, error):
-    if isinstance(error, commands.CommandOnCooldown):
-        message = f"This command is on cooldown. Please try again after {round(error.retry_after, 1)} seconds."
-    elif isinstance(error, commands.MissingPermissions):
-        message = "You are missing the required permissions to run this command!"
-    elif isinstance(error, commands.MissingRequiredArgument):
-        message = f"Missing a required argument: {error.param}"
-    elif isinstance(error, commands.ConversionError):
-        message = str(error)
-    else:
-        message = "Something unexpected went wrong."
-    await ctx.send(message)
-    #await ctx.message.delete(delay=5)
-
-
+#adding neccessary cogs
 bot.add_cog(Quotes())
 bot.add_cog(Reminders())
 bot.add_cog(Miscellaneous())
 bot.add_cog(Events(bot))
 
+#running the bot with hidden token
 with open("token.json","r") as token:
     data = json.load(token)
     bot.run(data.get("token"))

@@ -67,4 +67,3 @@ class Quotes(commands.Cog):
             authors_nonrep = list(set(authors_repeating))
 
             await ctx.send('\n'.join(authors_nonrep))
-
