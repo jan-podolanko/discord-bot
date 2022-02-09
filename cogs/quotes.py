@@ -5,16 +5,22 @@ import json, random, discord, requests
 #quote commmands
 class Quotes(commands.Cog):
     
+    #group for all quote related commands
+    @commands.group()
+    async def quote(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await ctx.send('Invalid quote command.')
+    
     #bot messages with random kanye quote from api
-    @commands.command()
+    @quote.command()
     async def kanye(self, ctx):
         quote = requests.get('https://api.kanye.rest/')
         json_quote = quote.json()
         await ctx.send('"{}" - Kanye West'.format(json_quote.get("quote")))
 
     #returns random quote from quotes.json file
-    @commands.command()
-    async def rand_quote(self, ctx):
+    @quote.command()
+    async def random(self, ctx):
         with open("./data/quotes.json","r") as quotes_json:
             quotes = json.load(quotes_json)["quotes"]
 
@@ -25,8 +31,8 @@ class Quotes(commands.Cog):
             await ctx.send(f'"{chosen_quote.get("quote")}" - {chosen_quote.get("author")}, {chosen_quote.get("date")}')
 
     #adds quote to json file
-    @commands.command()
-    async def add_quote(self, ctx, quote, author, qdate=str(date.today())):
+    @quote.command()
+    async def add(self, ctx, quote, author, qdate=str(date.today())):
         new_quote = {
                 "quote": quote,
                 "author": author,
@@ -40,14 +46,14 @@ class Quotes(commands.Cog):
             await ctx.send(f'Quote ""{quote}" - {author}, {qdate}" added.')
 
     #allows to download json file with quotes
-    @commands.command()
-    async def download_quotes(self, ctx):
+    @quote.command()
+    async def download(self, ctx):
         await ctx.send(file=discord.File("./data/quotes.json"))
 
 
     #sends all quotes by chosen author
-    @commands.command()
-    async def quotes_by(self, ctx, author):
+    @quote.command()
+    async def by(self, ctx, author):
         with open("./data/quotes.json","r") as quotes_json:
             quotes = json.load(quotes_json)["quotes"]
             message = f"All quotes by: \n"
@@ -58,8 +64,8 @@ class Quotes(commands.Cog):
             await ctx.send(message)
 
     #lists all quote authors
-    @commands.command()
-    async def quote_authors(self, ctx):
+    @quote.command()
+    async def authors(self, ctx):
         with open("./data/quotes.json","r") as quotes_json:
             quotes = json.load(quotes_json)["quotes"]
 

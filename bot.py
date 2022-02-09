@@ -19,7 +19,7 @@ bot = commands.Bot(command_prefix='!', description=desc, activity=activity, stat
 
 #adding neccessary cogs
 bot.add_cog(Quotes())
-bot.add_cog(Reminders())
+bot.add_cog(Reminders(bot))
 bot.add_cog(Miscellaneous())
 bot.add_cog(Events(bot))
 

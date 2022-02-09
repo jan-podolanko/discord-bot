@@ -36,14 +36,12 @@ class Events(commands.Cog):
         channel = self.bot.get_channel(815254981736529941)
         await channel.send('I have been awakened!')
 
-    @commands.Cog.listener()
-    async def on_message(self, ctx):
-        if "jan" in ctx.content.lower():
-            await ctx.add_reaction("🇯")
-            await ctx.add_reaction("🇦")
-            await ctx.add_reaction("🇳")
-    
+    #if any message contains one of the defined words, bot responds appropriately
     @commands.Cog.listener()
     async def on_message(self, ctx):
         if "turbo" in ctx.content.lower():
             await ctx.reply(file=discord.File('./pics/so-true.gif'))
+        if "jan" in ctx.content.lower():
+            await ctx.add_reaction("🇯")
+            await ctx.add_reaction("🇦")
+            await ctx.add_reaction("🇳")

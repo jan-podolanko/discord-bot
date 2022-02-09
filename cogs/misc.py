@@ -7,6 +7,7 @@ class Miscellaneous(commands.Cog):
     async def hello(self, message, test):
         await message.send(f'Hello! {test}')
 
+    #command to shut bot down (+ gif to accompany that)
     @commands.command()
     async def shutdown(self, ctx):
         await ctx.send("Shutting down bot.")

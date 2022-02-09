@@ -1,8 +1,16 @@
 import discord
 from discord.ext import commands
 from datetime import date
+#from apscheduler.schedulers.asyncio import AsyncIOScheduler
+#from apscheduler.triggers.cron import CronTrigger
+#trying to make sense of apscheduler, so far kind of a mess
 
 class Reminders(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    #async def reminder(self, ctx):
+    #    await ctx.send("i remind :)")
 
     #today's date
     @commands.command()
@@ -22,6 +30,13 @@ class Reminders(commands.Cog):
     #    if ctx.author == bot.user:
     #        if ctx == sad.jpg
 
-    @commands.command()
-    async def remind(self, ctx, arg, time):
-        return
+    """  async def func(self):
+        await self.bot.wait_until_ready()
+        channel = self.bot.get_channel(815254981736529941)
+        await channel.send("i remind :)")
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        scheduler = AsyncIOScheduler()
+        scheduler.add_job(self.func, CronTrigger(hour = "17", minute="27", second="0"))
+        scheduler.start() """
