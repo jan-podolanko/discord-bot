@@ -4,6 +4,7 @@ from cogs.misc import Miscellaneous
 from cogs.quotes import Quotes
 from cogs.reminders import Reminders
 from cogs.events import Events
+from discord_together import DiscordTogether
 
 #logging
 logger = logging.getLogger('discord')

@@ -1,21 +1,10 @@
 import discord
 from discord.ext import commands
-from datetime import date
-#from apscheduler.schedulers.asyncio import AsyncIOScheduler
-#from apscheduler.triggers.cron import CronTrigger
-#trying to make sense of apscheduler, so far kind of a mess
+from datetime import date, time, datetime
 
 class Reminders(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
-    #async def reminder(self, ctx):
-    #    await ctx.send("i remind :)")
-
-    #today's date
-    @commands.command()
-    async def today(self, ctx):
-        await ctx.send(date.today())
 
     #bot sends number of days since houseki no kuni hiatus :(
     @commands.command()
@@ -25,18 +14,12 @@ class Reminders(commands.Cog):
         await ctx.send("It has been {} days since Land of the Lustrous went on hiatus. 😭".format(delta.days))
         await ctx.send(file=discord.File('./pics/sad.jpg'))
 
-    #@bot.listen
-    #async def on_ctx(ctx):
-    #    if ctx.author == bot.user:
-    #        if ctx == sad.jpg
-
-    """  async def func(self):
-        await self.bot.wait_until_ready()
-        channel = self.bot.get_channel(815254981736529941)
-        await channel.send("i remind :)")
-
-    @commands.Cog.listener()
-    async def on_ready(self):
-        scheduler = AsyncIOScheduler()
-        scheduler.add_job(self.func, CronTrigger(hour = "17", minute="27", second="0"))
-        scheduler.start() """
+    @commands.command()
+    async def time_now(self, ctx):
+        today = datetime.now()
+        date_time = today.strftime("%d/%m/%Y, %H:%M:%S")
+        await ctx.send(date_time)
+    
+    @commands.command()
+    async def reminder():
+        return

@@ -50,7 +50,6 @@ class Quotes(commands.Cog):
     async def download(self, ctx):
         await ctx.send(file=discord.File("./data/quotes.json"))
 
-
     #sends all quotes by chosen author
     @quote.command()
     async def by(self, ctx, author):
