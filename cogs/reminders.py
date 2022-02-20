@@ -14,12 +14,9 @@ class Reminders(commands.Cog):
         await ctx.send("It has been {} days since Land of the Lustrous went on hiatus. 😭".format(delta.days))
         await ctx.send(file=discord.File('./pics/sad.jpg'))
 
+    #bot gives current date and time
     @commands.command()
     async def time_now(self, ctx):
         today = datetime.now()
         date_time = today.strftime("%d/%m/%Y, %H:%M:%S")
         await ctx.send(date_time)
-    
-    @commands.command()
-    async def reminder():
-        return

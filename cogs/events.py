@@ -7,7 +7,7 @@ class Events(commands.Cog):
         self.emojis = ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '🥲', '☺️', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🥸', '🤩', '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭', '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧', '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢', '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '😈', '👿', '👹', '👺', '🤡', '💩', '👻', '💀', '☠️', '👽', '👾', '🤖', '🎃', '😺', '😸', '😹', '😻', '😼', '😽', '🙀', '😿', '😾']
         self.bot = bot
 
-    #error handling (found on tutorial)
+    #simple error handling
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
@@ -32,12 +32,15 @@ class Events(commands.Cog):
             data = json.load(token)
             self.bot.togetherControl = await DiscordTogether(data.get("token"))
 
+    #command used to activate discord together (possible activities are: youtube, poker, chess, betrayal, 
+    # fishing, letter-league, word-snack, sketch-heads, spellcast, awkword and checkers)
     @commands.command()
     async def together(self,ctx,activity):
         link = await self.bot.togetherControl.create_link(ctx.author.voice.channel.id, activity)
         await ctx.send(f"Click the blue link!\n{link}")
 
-    #if any message contains one of the defined words, bot responds appropriately (as well as reacting with random emojis to some messages)
+    #if any message contains one of the defined words, bot responds appropriately
+    #(as well as reacting with random emojis to some messages)
     @commands.Cog.listener()
     async def on_message(self, ctx):
         if "turbo" in ctx.content.lower():

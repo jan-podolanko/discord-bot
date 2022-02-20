@@ -1,5 +1,5 @@
 from discord.ext import commands
-import requests, discord
+import discord
 
 class Miscellaneous(commands.Cog):
     #bot responds to greetings :)
