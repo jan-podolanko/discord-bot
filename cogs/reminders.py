@@ -1,10 +1,14 @@
 import discord
 from discord.ext import commands
 from datetime import date, time, datetime
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from functools import partial
 
 class Reminders(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.scheduler = AsyncIOScheduler(timezone="Europe/Berlin")
+        self.scheduler.start()
 
     #bot sends number of days since houseki no kuni hiatus :(
     @commands.command()
@@ -20,3 +24,11 @@ class Reminders(commands.Cog):
         today = datetime.now()
         date_time = today.strftime("%d/%m/%Y, %H:%M:%S")
         await ctx.send(date_time)
+
+    async def rem(self,context,message):
+        await context.send(f'Reminder: "{message}"')
+
+    @commands.command()
+    async def remind(self, ctx, msg, time, week_day=None, day_of_month=None):
+        h,m = time.split(':')
+        self.scheduler.add_job(self.rem,'cron', args=[ctx,msg], day=day_of_month, day_of_week=week_day, hour=int(h), minute=int(m))
