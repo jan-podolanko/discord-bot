@@ -1,8 +1,8 @@
+from posixpath import split
 import discord
 from discord.ext import commands
 from datetime import date, time, datetime
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from functools import partial
 
 class Reminders(commands.Cog):
     def __init__(self, bot):
@@ -31,4 +31,19 @@ class Reminders(commands.Cog):
     @commands.command()
     async def remind(self, ctx, msg, time, week_day=None, day_of_month=None):
         h,m = time.split(':')
-        self.scheduler.add_job(self.rem,'cron', args=[ctx,msg], day=day_of_month, day_of_week=week_day, hour=int(h), minute=int(m))
+        self.scheduler.add_job(self.rem,'cron', args=[ctx,msg], name=f"{msg} on {time}", day=day_of_month, day_of_week=week_day, hour=int(h), minute=int(m))
+
+    @commands.command()
+    async def remind_once(self, ctx, msg, time, date):
+        h,m = [int(i) for i in time.split(':')]
+        da,mo,ye = [int(i) for i in date.split('.')]
+        self.scheduler.add_job(self.rem,'date', args=[ctx,msg], name=f"{msg} on {date}, {time}", run_date=datetime(ye,mo,da,h,m,0))
+
+    @commands.command()
+    async def list(self,ctx):
+        await ctx.send(self.scheduler.get_jobs())
+    
+    @commands.command()
+    async def remove(self,ctx,id):
+        self.scheduler.remove_job(id)
+        ctx.send(f"Succesfully removed reminder with id {id}")
