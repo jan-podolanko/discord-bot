@@ -16,10 +16,8 @@ class Events(commands.Cog):
             message = "You are missing the required permissions to run this command!"
         elif isinstance(error, commands.MissingRequiredArgument):
             message = f"Missing a required argument: {error.param}"
-        elif isinstance(error, commands.ConversionError):
-            message = str(error)
         else:
-            message = "Something unexpected went wrong."
+            message = str(error)
         await ctx.send(message)
         #await ctx.message.delete(delay=5)
 
