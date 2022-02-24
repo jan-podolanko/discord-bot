@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from datetime import date, time, datetime
+from datetime import date, datetime
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 class Reminders(commands.Cog):
