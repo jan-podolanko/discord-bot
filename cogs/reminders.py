@@ -1,3 +1,4 @@
+from calendar import month
 from posixpath import split
 import discord
 from discord.ext import commands
@@ -24,24 +25,55 @@ class Reminders(commands.Cog):
 
     #sets up periodic reminders
     @commands.command()
-    async def remind(self, ctx, msg, time, week_day=None, day_of_month=None):
-        h,m = time.split(':')
-        self.scheduler.add_job(self.rem,'cron', args=[ctx,msg], name=f"{msg} on {time}", day=day_of_month, day_of_week=week_day, hour=int(h), minute=int(m))
+    async def remind_daily(self, ctx, msg, time):
+        h,m = [int(i) for i in time.split(':')]
+        self.scheduler.add_job(self.rem,'cron', args=[ctx,msg], name=msg, hour=h, minute=m)
+        ctx.send(f'Added daily reminder - "{msg}" at {time}')
+    
+    @commands.command()
+    async def remind_weekly(self, ctx, msg, time, week_day):
+        h,m = [int(i) for i in time.split(':')]
+        self.scheduler.add_job(self.rem,'cron', args=[ctx,msg], name=msg, day_of_week=week_day, hour=h, minute=m)
+        ctx.send(f'Added weekly reminder - "{msg}" on every {week_day} at {time}')
+    
+    @commands.command()
+    async def remind_monthly(self, ctx, msg, time, day_of_month):
+        h,m = [int(i) for i in time.split(':')]
+        self.scheduler.add_job(self.rem,'cron', args=[ctx,msg], name=msg, day=day_of_month, hour=h, minute=m)
+        ctx.send(f'Added monthly reminder - "{msg}" on every {day_of_month} at {time}')
+    
+    @commands.command()
+    async def remind_yearly(self, ctx, msg, time, date):
+        h,m = [int(i) for i in time.split(':')]
+        da,mo = [int(i) for i in date.split('.')]
+        self.scheduler.add_job(self.rem,'cron', args=[ctx,msg], name=msg, day=da, month=mo, hour=h, minute=m)
+        ctx.send(f'Added yearly reminder - "{msg}" on {date} at {time}')
 
     #sets up a single reminder at specific date
     @commands.command()
     async def remind_once(self, ctx, msg, time, date):
         h,m = [int(i) for i in time.split(':')]
         da,mo,ye = [int(i) for i in date.split('.')]
-        self.scheduler.add_job(self.rem,'date', args=[ctx,msg], name=f"{msg} on {date}, {time}", run_date=datetime(ye,mo,da,h,m,0))
+        self.scheduler.add_job(self.rem,'date', args=[ctx,msg], name=msg, run_date=datetime(ye,mo,da,h,m,0))
+        ctx.send(f'Added reminder - "{msg}"')
 
     #sends list of reminders
     @commands.command()
     async def list(self,ctx):
-        await ctx.send(self.scheduler.get_jobs())
+        if self.scheduler.get_jobs()==[]:
+            await ctx.send("No reminders set currently.")
+        else:
+            jobs = [f"Name: {i.name}, Scheduled date: {i.next_run_time}\n" for i in self.scheduler.get_jobs()]
+            await ctx.send("".join(jobs))
     
-    #removes reminders by id
+    #removes reminder by id
     @commands.command()
     async def remove(self,ctx,id):
         self.scheduler.remove_job(id)
         ctx.send(f"Succesfully removed reminder with id {id}")
+
+    #modifies reminder by id
+    #@commands.command()
+    #async def modify(self,ctx,id,change):
+    #    self.scheduler.modify_job(id,change)
+    #    ctx.send(f"Succesfully modified reminder with id {id}")

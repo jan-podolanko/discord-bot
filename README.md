@@ -9,3 +9,8 @@
 5. Discord Together
 6. Reminder function
 7. Migration to enhanced-discord.py
+
+## To do
+
+1. Reduce amount of commands in reminders
+2. Command to modify already existing reminders

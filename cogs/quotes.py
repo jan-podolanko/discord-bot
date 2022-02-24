@@ -11,14 +11,14 @@ class Quotes(commands.Cog):
         if ctx.invoked_subcommand is None:
             await ctx.send('Invalid quote command.')
     
-    #bot messages with random kanye quote from api
+    #sends random kanye quote from api
     @quote.command()
     async def kanye(self, ctx):
         quote = requests.get('https://api.kanye.rest/')
         json_quote = quote.json()
         await ctx.send('"{}" - Kanye West'.format(json_quote.get("quote")))
 
-    #returns random quote from quotes.json file
+    #sends random quote from saved quotes (quotes.json file)
     @quote.command()
     async def random(self, ctx):
         with open("./data/quotes.json","r") as quotes_json:
