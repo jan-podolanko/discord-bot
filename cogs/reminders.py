@@ -1,5 +1,3 @@
-from calendar import month
-from posixpath import split
 import discord
 from discord.ext import commands
 from datetime import date, time, datetime
