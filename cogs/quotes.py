@@ -6,20 +6,20 @@ import json, random, discord, requests
 class Quotes(commands.Cog):
     
     #group for all quote related commands
-    @commands.group()
+    @commands.group(help="Commands related to quotes.")
     async def quote(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send('Invalid quote command.')
     
     #sends random kanye quote from api
-    @quote.command()
+    @quote.command(aliases=["ye"], help="Sends a random kanye quote.")
     async def kanye(self, ctx):
         quote = requests.get('https://api.kanye.rest/')
         json_quote = quote.json()
         await ctx.send('"{}" - Kanye West'.format(json_quote.get("quote")))
 
     #sends random quote from saved quotes (quotes.json file)
-    @quote.command()
+    @quote.command(help="Sends random quote from previously saved quotes.")
     async def random(self, ctx):
         with open("./data/quotes.json","r") as quotes_json:
             quotes = json.load(quotes_json)["quotes"]
@@ -31,27 +31,27 @@ class Quotes(commands.Cog):
             await ctx.send(f'"{chosen_quote.get("quote")}" - {chosen_quote.get("author")}, {chosen_quote.get("date")}')
 
     #adds quote to json file
-    @quote.command()
-    async def add(self, ctx, quote, author, qdate=str(date.today())):
+    @quote.command(help="Adds quote to random quote list. \n Argument <quote> must be included in quotes, for example: 'I can resist everything except temptation.' \n Argument <author> must be included in quotes in the case it's longer than one word, like so: 'Oscar Wilde' \n Argument <date> is optional and defaults to today's date. It must be included in quotes in the case it's longer than one word - 16.12.2022 is okay, but 'a few days ago' would need to be in quotes.")
+    async def add(self, ctx, quote, author, date=str(date.today())):
         new_quote = {
                 "quote": quote,
                 "author": author,
-                "date": qdate
+                "date": date
             }
         with open("./data/quotes.json","r+") as quotes_json:
             quotes = json.load(quotes_json)
             quotes["quotes"].append(new_quote)
             quotes_json.seek(0)
             json.dump(quotes,quotes_json)
-            await ctx.send(f'Quote ""{quote}" - {author}, {qdate}" added.')
+            await ctx.send(f'Quote ""{quote}" - {author}, {date}" added.')
 
     #allows to download json file with quotes
-    @quote.command()
+    @quote.command(help="Sends file with all saved quotes in the json file format.")
     async def download(self, ctx):
         await ctx.send(file=discord.File("./data/quotes.json"))
 
     #sends all quotes by chosen author
-    @quote.command()
+    @quote.command(help="Shows all quotes by specific author.")
     async def by(self, ctx, author):
         with open("./data/quotes.json","r") as quotes_json:
             quotes = json.load(quotes_json)["quotes"]
@@ -63,7 +63,7 @@ class Quotes(commands.Cog):
             await ctx.send(message)
 
     #lists all quote authors
-    @quote.command()
+    @quote.command(help="Shows list of all quote authors.")
     async def authors(self, ctx):
         with open("./data/quotes.json","r") as quotes_json:
             quotes = json.load(quotes_json)["quotes"]

@@ -15,7 +15,7 @@ logger.addHandler(handler)
 
 #activity set in the constructor, apparently the bot breaks if set in on_ready() event
 activity = discord.Activity(type=discord.ActivityType.listening, name="just vibing")
-desc = "Yello! WeebReminder is a bot of many miscellaneous uses."
+desc = "WeebReminder is a bot that does stuff."
 bot = commands.Bot(command_prefix='!', description=desc, activity=activity, status=discord.Status.idle)
 
 #adding neccessary cogs
