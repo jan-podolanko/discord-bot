@@ -1,6 +1,6 @@
 # Discord bot project
 
-## Done
+## Done :)
 
 1. Shows time from hiatus of HnK
 2. Shows random Kanye quotes
