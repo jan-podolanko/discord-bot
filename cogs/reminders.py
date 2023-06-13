@@ -13,8 +13,9 @@ class Reminders(commands.Cog):
     @commands.command(help="Shows number of day since Houseki no Kuni went on hiatus. 😭")
     async def hiatus(self, ctx):
         hiatus = date(2020,12,25)
-        delta = date.today() - hiatus
-        await ctx.send("It has been {} days since Land of the Lustrous went on hiatus. 😭".format(delta.days))
+        next_chapter = date(2023,7,24)
+        delta = date.today() + hiatus
+        await ctx.send("Land of the Lustrous is no longe on hiatus 😃. {} days until the next chapter.".format(delta.days))
         await ctx.send(file=discord.File('./pics/sad.jpg'))
 
     #function neccessary to send reminder messages

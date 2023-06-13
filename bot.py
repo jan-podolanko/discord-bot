@@ -1,10 +1,13 @@
+import asyncio
 import discord, logging, json
 from discord.ext import commands
 from cogs.misc import Miscellaneous
 from cogs.quotes import Quotes
 from cogs.reminders import Reminders
 from cogs.events import Events
-from discord_together import DiscordTogether
+import nest_asyncio
+
+nest_asyncio.apply()
 
 #logging
 logger = logging.getLogger('discord')
@@ -16,15 +19,21 @@ logger.addHandler(handler)
 #activity set in the constructor, apparently the bot breaks if set in on_ready() event
 activity = discord.Activity(type=discord.ActivityType.listening, name="just vibing")
 desc = "WeebReminder is a bot that does stuff."
-bot = commands.Bot(command_prefix='!', description=desc, activity=activity, status=discord.Status.idle)
+intents = discord.Intents.default()
+intents.message_content = True
+bot = commands.Bot(command_prefix='!', description=desc, activity=activity, status=discord.Status.idle, intents=intents)
 
-#adding neccessary cogs
-bot.add_cog(Quotes())
-bot.add_cog(Reminders(bot))
-bot.add_cog(Miscellaneous())
-bot.add_cog(Events(bot))
+async def main():
+    async with bot:
+    #adding neccessary cogs
+        await bot.add_cog(Quotes())
+        await bot.add_cog(Reminders(bot))
+        await bot.add_cog(Miscellaneous())
+        await bot.add_cog(Events(bot))
 
-#running the bot with hidden token
-with open("token.json","r") as token:
-    data = json.load(token)
-    bot.run(data.get("token"))
+        #running the bot with hidden token
+        with open("token.json","r") as token:
+            data = json.load(token)
+            bot.run(data.get("token"))
+
+asyncio.run(main())
