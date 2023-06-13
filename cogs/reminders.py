@@ -19,8 +19,8 @@ class Reminders(commands.Cog):
         await ctx.send(file=discord.File('./pics/sad.jpg'))
 
     #function neccessary to send reminder messages
-    async def rem(self,context,message):
-        await context.send(f'Reminder: "{message}"')
+    async def rem(self,context,message,user):
+        await context.send(f'<@{user}> Reminder: "{message}"')
 
     @commands.group()
     async def remind(self, ctx):
@@ -30,49 +30,56 @@ class Reminders(commands.Cog):
     #sets up periodic reminders
     @remind.command(help="Sets up a daily reminder. Bot will send reminder every day at chosen hour. \n Argument <msg> must be included in quotes, like so: 'Remind me'. \n Argument <time> is to be formatted as 'h:m', for example: 16:45.")
     async def daily(self, ctx, msg, time):
+        user = ctx.author.id
         h,m = [int(i) for i in time.split(':')]
-        self.scheduler.add_job(self.rem,'cron', args=[ctx,msg], name=msg, hour=h, minute=m)
+        self.scheduler.add_job(self.rem,'cron', args=[ctx,msg,user], name=msg, hour=h, minute=m)
         await ctx.send(f'Added daily reminder - "{msg}" at {time}.')
     
     @remind.command(help="Sets up a weekly reminder. Bot will send reminder every week on chosen week day and hour. \n Argument <msg> must be included in quotes, like so: 'Remind me'. \n Argument <time> is to be formatted as 'h:m', for example: 16:45. \n Argument <day> is the full name of chosen day of the week - capitalization is irrelevant. Examples: 'Friday', 'sUnDaY'")
     async def weekly(self, ctx, msg, time, day):
+        user = ctx.author.id
         week_days={'monday':'mon', 'tuesday':'tue', 'wednesday':'wed', 'thursday':'thu', 'friday':'fri', 'saturday':'sat', 'sunday':'sun'}
         week_day = week_days[day.lower()]
         h,m = [int(i) for i in time.split(':')]
-        self.scheduler.add_job(self.rem,'cron', args=[ctx,msg], name=msg, day_of_week=week_day, hour=h, minute=m)
+        self.scheduler.add_job(self.rem,'cron', args=[ctx,msg,user], name=msg, day_of_week=week_day, hour=h, minute=m)
         await ctx.send(f'Added weekly reminder - "{msg}" on every {day.lower()} at {time}.')
     
     @remind.command(help="Sets up a monthly reminder. Bot will send reminder every month on chosen day and hour. \n Argument <msg> must be included in quotes, like so: 'Remind me'. \n Argument <time> is to be formatted as 'h:m', for example: 16:45. \n Argument <day_of_month> is the chosen day of the month, for example: 30.")
     async def monthly(self, ctx, msg, time, day_of_month):
+        user = ctx.author.id
         h,m = [int(i) for i in time.split(':')]
-        self.scheduler.add_job(self.rem,'cron', args=[ctx,msg], name=msg, day=day_of_month, hour=h, minute=m)
+        self.scheduler.add_job(self.rem,'cron', args=[ctx,msg,user], name=msg, day=day_of_month, hour=h, minute=m)
         await ctx.send(f'Added monthly reminder - "{msg}" on every {day_of_month} at {time}.')
     
     @remind.command(aliases=["annually"], help="Sets up a yearly reminder. Bot will send reminder every year on chosen day, month and hour. \n Argument <msg> must be included in quotes, like so: 'Remind me'. \n Argument <time> is to be formatted as 'h:m', for example: 16:45. \n Argument <date> is to be formatted like 'day.month', for example: 26.12.")
     async def yearly(self, ctx, msg, time, date):
+        user = ctx.author.id
         h,m = [int(i) for i in time.split(':')]
         da,mo = [int(i) for i in date.split('.')]
-        self.scheduler.add_job(self.rem,'cron', args=[ctx,msg], name=msg, day=da, month=mo, hour=h, minute=m)
+        self.scheduler.add_job(self.rem,'cron', args=[ctx,msg,user], name=msg, day=da, month=mo, hour=h, minute=m)
         await ctx.send(f'Added yearly reminder - "{msg}" on {date} at {time}.')
 
     #sets up a single reminder at specific date
     @remind.command(help="Sets up a one-time reminder. Bot will send reminder once at chosen hour and on chosen day, month and year. \n Argument <msg> must be included in quotes, like so: 'Remind me'. \n Argument <time> is to be formatted as 'h:m', for example: 16:45. \n Argument <date> is to be formatted like 'day.month.year', for example: 26.12.2022")
-    async def once(self, ctx, msg, time, date):
+    async def once(self, ctx, msg, time, date=date.today().strftime("%d.%m.%Y")):
+        user = ctx.author.id
         h,m = [int(i) for i in time.split(':')]
         da,mo,ye = [int(i) for i in date.split('.')]
-        self.scheduler.add_job(self.rem,'date', args=[ctx,msg], name=msg, run_date=datetime(ye,mo,da,h,m,0))
+        self.scheduler.add_job(self.rem,'date', args=[ctx,msg,user], name=msg, run_date=datetime(ye,mo,da,h,m,0))
         await ctx.send(f'Added reminder - "{msg}" on {date} at {time}.')
 
     #sets up a reminder on an hourly interval
     @remind.command(help="Sets up a reminder on an interval. Argument <hours> is the number of hours to wait. \n Argument <start_date> is optional and it's default value is current date and time. \n If you want to specify date from which this reminder is to work, you must format it like this: '2010-10-10 09:30:00'")
     async def hourly(self, ctx, msg, hours, start_date=datetime.now()):
-        self.scheduler.add_job(self.rem,'interval', args=[ctx,msg], name=msg, hours=int(hours), start_date=start_date)
+        user = ctx.author.id
+        self.scheduler.add_job(self.rem,'interval', args=[ctx,msg,user], name=msg, hours=int(hours), start_date=start_date)
         await ctx.send(f'Added reminder - "{msg}"')
 
     #sets up a reminder on an interval
     @remind.command(help="Sets up a reminder on an interval. Argument <no_of_days> is the number of days to wait. \n Argument <start_date> is optional and it's default value is current date and time. \n If you want to specify date from which this reminder is to work, you must format it like this: '2010-10-10 09:30:00'")
     async def interval(self, ctx, msg, no_of_days, start_date=datetime.now()):
-        self.scheduler.add_job(self.rem,'interval', args=[ctx,msg], name=msg, days=int(no_of_days), start_date=start_date)
+        user = ctx.author.id
+        self.scheduler.add_job(self.rem,'interval', args=[ctx,msg,user], name=msg, days=int(no_of_days), start_date=start_date)
         await ctx.send(f'Added reminder - "{msg}"')
 
     #sends list of reminders

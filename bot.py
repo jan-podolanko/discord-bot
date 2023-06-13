@@ -5,6 +5,7 @@ from cogs.misc import Miscellaneous
 from cogs.quotes import Quotes
 from cogs.reminders import Reminders
 from cogs.events import Events
+from cogs.music import Music
 import nest_asyncio
 
 nest_asyncio.apply()
@@ -30,6 +31,7 @@ async def main():
         await bot.add_cog(Reminders(bot))
         await bot.add_cog(Miscellaneous())
         await bot.add_cog(Events(bot))
+        await bot.add_cog(Music(bot))
 
         #running the bot with hidden token
         with open("token.json","r") as token:

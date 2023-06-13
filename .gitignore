@@ -3,6 +3,4 @@ __pycache__/
 
 token.json
 discord.log
-test1.py
-test2.py
-test3.py
+audio/*
