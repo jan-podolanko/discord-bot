@@ -28,14 +28,6 @@ class Events(commands.Cog):
         with open("token.json","r") as token:
             data = json.load(token)
 
-    #command used to activate discord together (possible activities are: youtube, poker, chess, betrayal, 
-    # fishing, letter-league, word-snack, sketch-heads, spellcast, awkword and checkers)
-    
-    """ @commands.command(help="Creates discord acitivity of chosen type. Possible activities and their ids: \n Watch Together: youtube \n Poker Night: poker \n Chess in the Park: chess \n Betrayal.io: betrayal \n Fishington.io: fishing \n Letter League: letter-league \n Word Snack: word-snack \n Sketch Heads: sketch-heads, SpellCast: spellcast \n Awkword: awkword \n Checkers in the Park: checkers")
-    async def together(self,ctx,activity):
-        link = await self.bot.togetherControl.create_link(ctx.author.voice.channel.id, activity)
-        await ctx.send(f"Click the blue link!\n{link}") """
-
     #if any message contains one of the defined words, bot responds appropriately
     #(as well as reacting with random emojis to some messages)
     @commands.Cog.listener()
