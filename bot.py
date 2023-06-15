@@ -22,6 +22,7 @@ activity = discord.Activity(type=discord.ActivityType.listening, name="just vibi
 desc = "WeebReminder is a bot that does stuff."
 intents = discord.Intents.default()
 intents.message_content = True
+intents.voice_states = True
 bot = commands.Bot(command_prefix='!', description=desc, activity=activity, status=discord.Status.idle, intents=intents)
 
 async def main():
