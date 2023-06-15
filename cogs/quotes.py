@@ -55,7 +55,7 @@ class Quotes(commands.Cog):
     async def by(self, ctx, author):
         with open("./data/quotes.json","r") as quotes_json:
             quotes = json.load(quotes_json)["quotes"]
-            message = f"All quotes by: \n"
+            message = f"All quotes by {author}: \n"
             for quote in quotes:
                 if quote.get("author") == author:
                     message += f'"{quote.get("quote")}" - {quote.get("author")}, {quote.get("date")} \n'

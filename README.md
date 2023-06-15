@@ -13,4 +13,9 @@
 9. Plays music
 ## To do
 
-1. Command to modify already existing reminders
+1. (Reminders) Command to modify already existing reminders
+2. (Music) Add support for playing entire playlists
+3. (Music) Add support for other websites
+4. Refactoring (too much repetition)
+5. Store strings somewhere
+6. Check out poetry for python

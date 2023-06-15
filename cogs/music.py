@@ -50,11 +50,10 @@ class Music(commands.Cog):
             # deletes the current song from queue
             del self.queue[0]
         else:
-            #change activity and send message, then wait for 60 seconds before disconnecting
+            #change activity and send message, then disconnect
             act_vibing = discord.Activity(type=discord.ActivityType.listening, name="just vibing")
             await self.bot.change_presence(status=discord.Status.idle, activity=act_vibing)
             await ctx.send("No more songs in queue.", delete_after=15)
-            await asyncio.sleep(60)
             await vc.disconnect()
                 
     @music.command(help="Downloads and plays audio. Argument <song> is to be either a search term in quotes or a YouTube URL.")
