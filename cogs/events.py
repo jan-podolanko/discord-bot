@@ -17,14 +17,13 @@ class Events(commands.Cog):
             message = f"Missing a required argument: {error.param}"
         else:
             message = str(error)
-        await ctx.send(message)
-        #await ctx.message.delete(delay=5)
+        await ctx.send(message, delete_after=15)
 
     #message on logging on (and enabling discord together)
     @commands.Cog.listener()
     async def on_ready(self):
         channel = self.bot.get_channel(815254981736529941)
-        await channel.send('I have been awakened!')
+        await channel.send('I have been awakened!', delete_after=15)
         with open("token.json","r") as token:
             data = json.load(token)
 

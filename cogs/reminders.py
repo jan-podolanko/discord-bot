@@ -14,8 +14,8 @@ class Reminders(commands.Cog):
     async def hiatus(self, ctx):
         hiatus = date(2020,12,25)
         next_chapter = date(2023,7,24)
-        delta = date.today() + hiatus
-        await ctx.send("Land of the Lustrous is no longe on hiatus 😃. {} days until the next chapter.".format(delta.days))
+        delta = next_chapter - date.today()
+        await ctx.send("Land of the Lustrous is no longer on hiatus 😃. {} days until the next chapter.".format(delta.days))
         await ctx.send(file=discord.File('./pics/sad.jpg'))
 
     #function neccessary to send reminder messages

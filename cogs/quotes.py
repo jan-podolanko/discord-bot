@@ -9,7 +9,7 @@ class Quotes(commands.Cog):
     @commands.group(help="Commands related to quotes.")
     async def quote(self, ctx):
         if ctx.invoked_subcommand is None:
-            await ctx.send('Invalid quote command.')
+            await ctx.send('Invalid quote command.', delete_after=15)
     
     #sends random kanye quote from api
     @quote.command(aliases=["ye"], help="Sends a random kanye quote.")

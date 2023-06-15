@@ -12,10 +12,10 @@ class Music(commands.Cog):
         self.current_song = ""
         self.queue = []
 
-    @commands.group(help="Commands related to music.")
+    @commands.group(help="Contains commands related to music.")
     async def music(self, ctx):
         if ctx.invoked_subcommand is None:
-            await ctx.send('Invalid music command.')
+            await ctx.send('Invalid music command.', delete_after=15)
     
     # downloads yt_url to the audio directory
     def download_audio(self, yt_url):
@@ -23,7 +23,7 @@ class Music(commands.Cog):
             'format': 'bestaudio/best',
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
+                'preferredcodec': 'm4a',
                 'preferredquality': '192',
             }],
             'outtmpl': os.getcwd() + '/audio/%(title)s.%(ext)s'
@@ -36,98 +36,103 @@ class Music(commands.Cog):
                 info = ydl.extract_info(f"ytsearch:{yt_url}")['entries'][0]
                 return info.get('title', None)
 
-    def play_next(self, ctx):
+    async def play_next(self, ctx):
         vc = get(self.bot.voice_clients, guild=ctx.guild)
         if len(self.queue) >= 1:
-            
-            vc.play(discord.FFmpegPCMAudio(f'audio/{self.queue[0]}.mp3'), after=lambda e: self.play_next(ctx))
-            activity = discord.Activity(type=discord.ActivityType.listening, name=self.queue[0])
-            asyncio.run_coroutine_threadsafe(ctx.send(f"Now playing {self.queue[0]}."), self.bot.loop)
-            asyncio.run_coroutine_threadsafe(self.bot.change_presence(status=discord.Status.online, activity=activity), self.bot.loop)
+            # changes the current song value
             self.current_song = self.queue[0]
+            # plays the next song in the queue
+            vc.play(discord.FFmpegPCMAudio(f'audio/{self.queue[0]}.m4a'), after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next(ctx), self.bot.loop))
+            # changes activity and sends message about the current song
+            activity = discord.Activity(type=discord.ActivityType.listening, name=self.queue[0])
+            await ctx.send(f"Now playing {self.queue[0]}.", delete_after=15)
+            await self.bot.change_presence(status=discord.Status.online, activity=activity)
+            # deletes the current song from queue
             del self.queue[0]
         else:
-            if not vc.is_playing():
-                asyncio.run_coroutine_threadsafe(vc.disconnect(), self.bot.loop)
-                asyncio.run_coroutine_threadsafe(ctx.send("No more songs in queue."), self.bot.loop)
-                act_vibing = discord.Activity(type=discord.ActivityType.listening, name="just vibing")
-                asyncio.run_coroutine_threadsafe(self.bot.change_presence(status=discord.Status.idle, activity=act_vibing), self.bot.loop)
-
-
-    @commands.command(help="Downloads and plays audio. Argument <song> is to be either a search term in quotes or a YouTube URL.")
+            #change activity and send message, then wait for 60 seconds before disconnecting
+            act_vibing = discord.Activity(type=discord.ActivityType.listening, name="just vibing")
+            await self.bot.change_presence(status=discord.Status.idle, activity=act_vibing)
+            await ctx.send("No more songs in queue.", delete_after=15)
+            await asyncio.sleep(60)
+            await vc.disconnect()
+                
+    @music.command(help="Downloads and plays audio. Argument <song> is to be either a search term in quotes or a YouTube URL.")
     async def play(self, ctx, song):
-        
+        # downloads song and song title, then adds song to queue
         title = self.download_audio(song)
         self.queue.append(title)
 
-        # gets voice channel of message author
+        # gets voice channel of message author, then connects to vc
         voice_channel = ctx.message.author.voice.channel
-        # connect to vc
         vc = get(self.bot.voice_clients, guild=ctx.guild)
         if not vc:
             vc = await voice_channel.connect()
 
-
+        # sends message if command user isn't in voice channel
         if voice_channel == None:
-            await ctx.send(str(ctx.author.name) + "is not in a channel.")
+            await ctx.send(str(ctx.author.name) + "is not in a channel.", delete_after=15)
 
+        # if the bot isn't currently playing anything, plays the song
         elif not vc.is_playing():
-            # play audio by the mp3 title
-            vc.play(discord.FFmpegPCMAudio(f'audio/{title}.mp3'), after=lambda e: self.play_next(ctx))
-            await ctx.send(f'Now playing {title}.')
+            # plays audio by the m4a title; afterwards runs play_next function (which plays next song duh)
+            vc.play(discord.FFmpegPCMAudio(f'audio/{title}.m4a'), after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next(ctx), self.bot.loop))
+            await ctx.send(f'Now playing {title}.', delete_after=15)
             self.current_song = title
+
             # change activity
             activity = discord.Activity(type=discord.ActivityType.listening, name=title)
             await self.bot.change_presence(status=discord.Status.online, activity=activity)
             del self.queue[0]
-            
+
+        # if bot is currently playing a song, it only queues it up and sends this message
         else:
-            await ctx.send(f'{title} queued.')
+            await ctx.send(f'{title} queued.', delete_after=15)
         
-    @commands.command(help="Pauses song.")
+    @music.command(help="Pauses song.")
     async def pause(self, ctx):
         voice_client = get(self.bot.voice_clients, guild=ctx.guild)
         if voice_client and voice_client.is_playing():
             voice_client.pause()
         else:
-            ctx.send("Not playing anything!")
+            ctx.send("Not playing anything!", delete_after=15)
         
-    @commands.command(help="Resumes song.")
+    @music.command(help="Resumes song.")
     async def resume(self, ctx):
         voice_client = get(self.bot.voice_clients, guild=ctx.guild)
         if voice_client and voice_client.is_connected():
             voice_client.resume()
         else:
-            ctx.send("Not playing anything!")
+            ctx.send("Not playing anything!", delete_after=15)
 
-    @commands.command(help="Skips current song.")
+    @music.command(help="Skips current song.")
     async def skip(self, ctx):
         voice_client = get(self.bot.voice_clients, guild=ctx.guild)
         if voice_client and voice_client.is_playing():
             voice_client.stop()
         else:
-            ctx.send("Not playing anything!")
+            ctx.send("Not playing anything!", delete_after=15)
 
-    @commands.command(help="Stops playing.")
+    @music.command(help="Stops playing.")
     async def stop(self, ctx):
         voice_client = get(self.bot.voice_clients, guild=ctx.guild)
         if voice_client and voice_client.is_playing():
             await voice_client.disconnect()
         else:
-            ctx.send("Not playing anything!")
+            ctx.send("Not playing anything!", delete_after=15)
 
-    @commands.command(help="Shows queue.")
+    @music.command(help="Shows queue.")
     async def queue(self, ctx):
         if len(self.queue) > 0:
-            await ctx.send(f"Currently playing: {self.current_song}.\nQueue:\n" + "".join([str(i) + ". " + str(x) + "\n" for i, x in enumerate(self.queue)]))
+            await ctx.send(f"Currently playing: {self.current_song}.\nQueue:\n" + "".join([str(i) + ". " + str(x) + "\n" for i, x in enumerate(self.queue)]), delete_after=15)
         elif self.current_song:
-            await ctx.send(f"Currently playing: {self.current_song}.\nQueue empty.")
+            await ctx.send(f"Currently playing: {self.current_song}.\nQueue empty.", delete_after=15)
         else:
-            await ctx.send("Queue empty.")
+            await ctx.send("Queue empty.", delete_after=15)
 
-    @commands.command(help="Shows song currently playing.")
+    @music.command(help="Shows song currently playing.")
     async def current(self, ctx):
         if self.current_song:
-            await ctx.send(f"Currently playing: {self.current_song}.")
+            await ctx.send(f"Currently playing: {self.current_song}.", delete_after=15)
         else:
-            await ctx.send("Currently not playing anything.")
+            await ctx.send("Currently not playing anything.", delete_after=15)
